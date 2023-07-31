@@ -71,12 +71,12 @@ spec:
     spec:
       containers:
         - name: kube-eventrouter
-          image: registry.redhat.io/openshift-logging/eventrouter-rhel8:v0.3
+          image: eschercloudai/eventrouter:latest
           resources:
             requests:
               cpu: 100m
               memory: 128Mi
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           volumeMounts:
           - name: config-volume
             mountPath: /etc/eventrouter

@@ -1,13 +1,12 @@
-FROM registry.redhat.io/ubi9/go-toolset:latest AS builder
+FROM cgr.dev/chainguard/go:latest AS builder
 WORKDIR  /go/src/github.com/openshift/eventrouter
-USER 0
-COPY Makefile *.go go.mod go.sum ./
+COPY *.go go.mod go.sum ./
 COPY sinks ./sinks
 
-RUN make build
+RUN CGO_ENABLED=0 go build -mod=mod -o eventrouter
+RUN chmod +x eventrouter
 
-FROM registry.redhat.io/ubi9/ubi:latest
-USER 1000
-COPY --from=builder /go/src/github.com/openshift/eventrouter/eventrouter /bin/eventrouter
-CMD ["/bin/eventrouter", "-v", "3", "-logtostderr"]
+FROM cgr.dev/chainguard/static:latest
+COPY --from=builder /go/src/github.com/openshift/eventrouter/eventrouter /eventrouter
+CMD ["/eventrouter", "-v", "3", "-logtostderr"]
 LABEL version=release-5.8
